@@ -26,7 +26,6 @@ const (
 	Duration   = 0.33
 	SampleRate = 44100
 	Frequency  = 440
-	Delay      = 0.15
 )
 
 var (
@@ -35,19 +34,18 @@ var (
 
 func main() {
 	if len(os.Args) != 3 {
-		fmt.Println("require name of note.dat file and output")
+		fmt.Println("require name of jingle.dat file and output")
 		return
 	}
 	filePath := os.Args[1]
 	readFile, err := os.Open(filePath)
-
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	fileScanner := bufio.NewScanner(readFile)
 	fileScanner.Split(bufio.ScanLines)
 	var fileLines []string
-
 	for fileScanner.Scan() {
 		fileLines = append(fileLines, fileScanner.Text())
 	}
@@ -71,7 +69,6 @@ func main() {
 
 func generate(filename string, notes [][]string) {
 	nsamps := Duration * SampleRate
-	var blob []float64
 	var angle float64 = tau / float64(nsamps)
 	file := filename
 	f, _ := os.Create(file)
@@ -89,7 +86,6 @@ func generate(filename string, notes [][]string) {
 				var buf [4]byte
 				binary.LittleEndian.PutUint32(buf[:], math.Float32bits(float32(sample)))
 				bw, err := f.Write(buf[:])
-				blob = append(blob, sample)
 				if err != nil {
 					panic(err)
 				}
